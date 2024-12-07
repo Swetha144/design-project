@@ -1,0 +1,167 @@
+import speech_recognition as sr
+import pyttsx3
+import pywhatkit
+import sys
+import datetime
+import wikipedia
+import pyjokes
+import webbrowser
+
+# Initialize pyttsx3 engine
+engine = pyttsx3.init()
+engine.setProperty('rate', 150)
+voices = engine.getProperty('voices')
+engine.setProperty('voice', voices[0].id)
+
+# Initialize speech recognizer
+recognizer = sr.Recognizer()
+
+def say(text):
+    """Function to make the assistant speak"""
+    engine.say(text)
+    engine.runAndWait()
+
+def run_va():
+    """Function to run the virtual assistant"""
+    with sr.Microphone() as source:
+        recognizer.adjust_for_ambient_noise(source, duration=1)
+        print("\nYes")
+        print("Listening...")
+        say('Listening')
+        audio = recognizer.listen(source)
+
+    try:
+        # Recognize the speech using Google Speech API
+        command = recognizer.recognize_google(audio, language='en-in')
+        print(command)
+        command = command.lower()
+
+        if 'hello' in command:
+            print("Hi, how can I help you?")
+            say("Hi, how can I help you?")
+
+        elif 'can you do' in command:
+            print('I can tell you a joke, search on Wikipedia, tell date and time, '
+                  'find your location, locate area on map, open different websites like Instagram, '
+                  'YouTube, Gmail, GitHub, Stack Overflow, and search on Google.')
+            say('I can tell you a joke, search on Wikipedia, tell date and time, '
+                'find your location, locate area on map, open different websites like Instagram, '
+                'YouTube, Gmail, GitHub, Stack Overflow, and search on Google.')
+
+        elif 'play' in command:
+            song = command.replace('play', '')
+            print('Playing ' + song)
+            say('Playing ' + song)
+            pywhatkit.playonyt(song)
+
+        elif 'date and time' in command:
+            today = datetime.date.today()
+            time = datetime.datetime.now().strftime('%I:%M %p')
+            d2 = today.strftime("%B %d, %Y")
+            print("Today's Date is ", d2, 'Current time is', time)
+            say('Today is: ' + d2)
+            say('And current time is ' + time)
+
+        elif 'time' in command:
+            time = datetime.datetime.now().strftime('%I:%M %p')
+            print('It is ' + time)
+            say('It is ' + time)
+
+        elif 'date' in command:
+            today = datetime.date.today()
+            d2 = today.strftime("%B %d, %Y")
+            print("It is ", d2)
+            say('It is ' + d2)
+
+        elif 'tell me about' in command:
+            name = command.replace('tell me about', '')
+            answer = wikipedia.summary(name, 2)
+            print(answer)
+            say(answer)
+
+        elif 'wikipedia' in command:
+            name = command.replace('wikipedia', '')
+            answer = wikipedia.summary(name, 2)
+            print(answer)
+            say(answer)
+
+        elif 'google' in command:
+            search = 'https://www.google.com/search?q=' + command
+            print('This is what I found on Google..')
+            say('Searching... This is what I found on Google..')
+            webbrowser.open(search)
+
+        elif 'joke' in command:
+            joke = pyjokes.get_joke()
+            print(joke)
+            say(joke)
+
+        elif "my location" in command:
+            url = "https://www.google.com/maps/search/Where+am+I+?/ "
+            webbrowser.open(url)
+            say("As per Google maps, you must be near")
+
+        elif 'on map' in command:
+            say('Locating...')
+            loc = command.split(" ")
+            print(loc[1])
+            url = 'https://google.nl/maps/place/' + loc[1] + '/&amp;'
+            webbrowser.open(url)
+            print('Here is the location of ' + loc[1])
+            say('Here is the location of ' + loc[1])
+
+        elif 'location of' in command:
+            say('Locating...')
+            loc = command.replace('find location of', '')
+            url = 'https://google.nl/maps/place/' + loc + '/&amp;'
+            webbrowser.open(url)
+            print('Here is the location of ' + loc)
+            say('Here is the location of ' + loc)
+
+        elif 'open google' in command:
+            print('Opening Google...')
+            say('Opening Google..')
+            webbrowser.open_new('https://www.google.co.in/')
+
+        elif 'open gmail' in command:
+            print('Opening Gmail...')
+            say('Opening Gmail..')
+            webbrowser.open_new('https://www.mail.google.co.in/')
+
+        elif 'open youtube' in command:
+            print('Opening YouTube...')
+            say('Opening YouTube..')
+            webbrowser.open_new('https://www.youtube.com')
+
+        elif 'open insta' in command:
+            print('Opening Instagram...')
+            say('Opening Instagram..')
+            webbrowser.open_new('https://www.instagram.com')
+
+        elif 'open github' in command:
+            print('Opening GitHub...')
+            say('Opening GitHub..')
+            webbrowser.open_new('https://www.github.com')
+
+        elif 'bye' in command or 'stop' in command:
+            print('Goodbye, see you soon')
+            say('Goodbye, see you soon')
+            sys.exit()
+
+        elif 'thank you' in command or 'thanks' in command:
+            print("My pleasure")
+            say("My pleasure")
+
+        else:
+            print('Here is what I found on the internet...')
+            say('Here is what I found on the internet...')
+            search = 'https://www.google.com/search?q=' + command
+            webbrowser.open(search)
+
+    except Exception as e:
+        print(e)
+
+print('Loading... Please wait')
+say('Loading... Please wait')
+print("\nHi pal, I am your virtual friend. How can I help you?")
+say("Hi pal, I am your virtual friend. How can I help you?")
